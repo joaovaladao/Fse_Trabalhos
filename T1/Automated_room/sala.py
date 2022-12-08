@@ -15,7 +15,9 @@ class sala:
     sensor_janela_2, 
     sensor_contagem_pessoas_entrada, 
     sensor_contagem_pessoas_saida, 
-    sensor_temp):
+    sensor_temp,
+    estado_lampada_1 = 0,
+    estado_lampada_2 = 0):
 
         self.lampada_1 = LED(lampada_1)
         self.lampada_2 = LED(lampada_2)
@@ -29,8 +31,18 @@ class sala:
         self.sensor_contagem_pessoas_entrada = sensor_contagem_pessoas_entrada
         self.sensor_contagem_pessoas_saida = sensor_contagem_pessoas_saida
         self.sensor_temp = sensor_temp
+        self.estado_lampada_1 = estado_lampada_1
+        self.estado_lampada_2 = estado_lampada_2
 
-    def control_lampadas(self, lampada, ligado):
+    def set_estado_lampada_1(self, estado):
+        self.estado_lampada_1 = estado
+        print('valor da lampada 1 setado p/', estado )
+
+    def set_estado_lampada_2(self, estado):
+        self.estado_lampada_2 = estado
+        print('valor da lampada 2 setado p/', estado )
+
+    def controll_lamps(self, lampada, ligado):
         if lampada == 1:
             led = self.lampada_1
         elif lampada == 2:
@@ -40,3 +52,16 @@ class sala:
             led.on()
         elif ligado == 0:
             led.off()
+
+    def controll_all_lamps(self, ligado):
+        if ligado == 1:
+            self.lampada_1.on()
+            self.lampada_2.on()
+            self.estado_lampada_1 = 1
+            self.estado_lampada_2 = 1
+
+        elif ligado == 0:
+            self.lampada_1.off()
+            self.lampada_2.off()
+            self.estado_lampada_1 = 0
+            self.estado_lampada_2 = 0

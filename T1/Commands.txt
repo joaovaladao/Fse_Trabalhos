@@ -1,0 +1,3 @@
+scp -P 13508 -r Automated_room joaobrito@164.41.98.28:~
+
+ssh joaobrito@164.41.98.28 -p 13508
