@@ -1,50 +1,38 @@
 #Global variables
-
+import RPi.GPIO as GPIO
+from menu import menu
 from sala import sala
 
-def menu(sala):
-    print("1 - Ligar/Desligar uma luz")
-    print("2 - Ligar/Desligar todas as luzes")
+sala_1 = sala(18, 23, 24, 25, 8, 7, 1, 12, 16, 20, 21, 26)
 
-    sala_atual = sala
-    opcao = int(input("Escolha uma opcao: "))
+def initialize_settup(sala):
+    # Initialize settings
+    GPIO.setwarnings(False)
+    GPIO.setmode(GPIO.BCM) 
 
-    if opcao == 1:
-        print("Insira a lampada que deseja ligar/desligar: ")
-        lampada = int(input("Lampada: "))
+    # leds
+    GPIO.setup([18, 23], GPIO.OUT)
 
-        if sala_atual.estado_lampada_1 == 0:
-            sala_atual.controll_lamps(lampada,1)
-            if lampada == 1:
-                sala_atual.set_estado_lampada_1(1)
-            elif lampada == 2:
-                sala_atual.set_estado_lampada_2(1)
+    # sensor de presença
+    GPIO.setup(7, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.add_event_detect(7, GPIO.BOTH, callback=mod_sensor_de_presenca, bouncetime = 300)
 
-        elif sala_atual.estado_lampada_1 == 1:
-            sala_atual.controll_lamps(lampada,0)
-            if lampada == 1:
-                sala_atual.set_estado_lampada_1(0)
-            elif lampada == 2:
-                sala_atual.set_estado_lampada_2(0)
+def mod_sensor_de_presenca(GPIO_pin):
 
-    elif opcao == 2:
-        print("Digite o comando desejado:\n0 - Desligar todas as lampadas\n1 - Ligar todas as lampadas\n")
-        on_off = int(input())
+    if sala_1.get_estado_sensor_presenca() == 0:
+        sala_1.set_estado_sensor_presenca(1)
+        print('\nsensor de presença ativado')
 
-        if on_off == 0:
-            sala_atual.controll_all_lamps(0)
-            print('Todas as lampadas foram desligadas')
- 
-        elif on_off == 1:
-            sala_atual.controll_all_lamps(1)
-            print('Todas as lampadas foram ligadas')
+    elif sala_1.get_estado_sensor_presenca() == 1:
+        sala_1.set_estado_sensor_presenca(0)
+        print('\nsensor de presença desativado')
+    
 
-    else:
-        print("Opcao invalida")
 
 def main():
-    # Call the function
-    sala_1 = sala(18, 23, 24, 25, 8, 7, 1, 12, 16, 20, 21, 26)
+
+    initialize_settup(sala_1)
+
     # sala_1.control_lampadas(2,1)
 
     while(1):

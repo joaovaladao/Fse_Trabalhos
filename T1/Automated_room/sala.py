@@ -1,5 +1,6 @@
 from time import sleep
-from gpiozero import LED
+import RPi.GPIO as GPIO
+# from gpiozero import LED, Button
 
 class sala:
 
@@ -17,10 +18,21 @@ class sala:
     sensor_contagem_pessoas_saida, 
     sensor_temp,
     estado_lampada_1 = 0,
-    estado_lampada_2 = 0):
+    estado_lampada_2 = 0,
+    estado_ar_condicionado = 0,
+    estado_projetor = 0,
+    estado_alarme = 0,
+    estado_sensor_presenca = 0,
+    estado_sensor_fumaca = 0,
+    estado_sensor_janela_1 = 0,
+    estado_sensor_janela_2 = 0,
+    estado_sensor_contagem_pessoas_entrada = 0,
+    estado_sensor_contagem_pessoas_saida = 0,
+    estado_sensor_temp = 0
+    ):
 
-        self.lampada_1 = LED(lampada_1)
-        self.lampada_2 = LED(lampada_2)
+        self.lampada_1 = lampada_1
+        self.lampada_2 = lampada_2
         self.ar_condicionado = ar_condicionado
         self.projetor = projetor
         self.alarme = alarme
@@ -33,35 +45,66 @@ class sala:
         self.sensor_temp = sensor_temp
         self.estado_lampada_1 = estado_lampada_1
         self.estado_lampada_2 = estado_lampada_2
+        self.estado_ar_condicionado = estado_ar_condicionado
+        self.estado_projetor = estado_projetor
+        self.estado_alarme = estado_alarme
+        self.estado_sensor_presenca = estado_sensor_presenca
+        self.estado_sensor_fumaca = estado_sensor_fumaca
+        self.estado_sensor_janela_1 = estado_sensor_janela_1
+        self.estado_sensor_janela_2 = estado_sensor_janela_2
+        self.estado_sensor_contagem_pessoas_entrada = estado_sensor_contagem_pessoas_entrada
+        self.estado_sensor_contagem_pessoas_saida = estado_sensor_contagem_pessoas_saida
+        self.estado_sensor_temp = estado_sensor_temp
+
 
     def set_estado_lampada_1(self, estado):
         self.estado_lampada_1 = estado
-        print('valor da lampada 1 setado p/', estado )
 
     def set_estado_lampada_2(self, estado):
         self.estado_lampada_2 = estado
-        print('valor da lampada 2 setado p/', estado )
+
+    def set_estado_sensor_presenca(self, estado):
+        self.estado_sensor_presenca = estado
+
+    def get_estado_sensor_presenca(self):
+        return self.estado_sensor_presenca
 
     def controll_lamps(self, lampada, ligado):
         if lampada == 1:
             led = self.lampada_1
+
         elif lampada == 2:
             led = self.lampada_2
 
         if ligado == 1:    
-            led.on()
+            GPIO.output(led, GPIO.HIGH)
         elif ligado == 0:
-            led.off()
+            GPIO.output(led, GPIO.LOW)
 
     def controll_all_lamps(self, ligado):
         if ligado == 1:
-            self.lampada_1.on()
-            self.lampada_2.on()
+            GPIO.output(self.lampada_1, GPIO.HIGH)
+            GPIO.output(self.lampada_2, GPIO.HIGH)
+            # self.lampada_1.on()
+            # self.lampada_2.on()
             self.estado_lampada_1 = 1
             self.estado_lampada_2 = 1
 
         elif ligado == 0:
-            self.lampada_1.off()
-            self.lampada_2.off()
+            GPIO.output(self.lampada_1, GPIO.LOW)
+            GPIO.output(self.lampada_2, GPIO.LOW)
+            # self.lampada_1.off()
+            # self.lampada_2.off()
             self.estado_lampada_1 = 0
             self.estado_lampada_2 = 0
+
+    def get_all_sensors(self, sala): 
+
+        print('------------Sensores------------')
+        print('sensor de presença: ', self.estado_sensor_presenca)       
+        # print('sensor de fumaça: ', self.sensor_fumaca)
+        # print('sensor de janela 1: ', self.sensor_janela_1)
+        # print('sensor de janela 2: ', self.sensor_janela_2)
+        # print('sensor de contagem de pessoas na entrada: ', self.sensor_contagem_pessoas_entrada)
+        # print('sensor de contagem de pessoas na saida: ', self.sensor_contagem_pessoas_saida)
+        # print('sensor de temperatura: ', self.sensor_temp)
