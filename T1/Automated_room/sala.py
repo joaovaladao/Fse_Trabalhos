@@ -122,9 +122,14 @@ class sala:
 
         print('------------Sensores------------')
         print('sensor de presença: ', self.estado_sensor_presenca)       
-        print('sensor de fumaça: ', self.sensor_fumaca)
-        print('sensor de janela: ', self.sensor_janela)
-        print('sensor de porta: ', self.sensor_porta)
+        print('sensor de fumaça: ', self.estado_sensor_fumaca)
+        print('sensor de janela: ', self.estado_sensor_janela)
+        print('sensor de porta: ', self.estado_sensor_porta)
         # print('sensor de contagem de pessoas na entrada: ', self.sensor_contagem_pessoas_entrada)
         # print('sensor de contagem de pessoas na saida: ', self.sensor_contagem_pessoas_saida)
         # print('sensor de temperatura: ', self.sensor_temp)
+
+    def fire_alarm(self):
+        print('ALARME DE INCENDIO')
+        GPIO.output(self.alarme, GPIO.HIGH)
+        self.estado_alarme = 1
