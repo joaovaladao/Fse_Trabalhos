@@ -2,6 +2,7 @@
 import RPi.GPIO as GPIO
 from menu import menu
 from sala import sala
+from sensores import mod_sensor_de_presenca, mod_sensor_de_fumaca, mod_sensor_de_janela, mod_sensor_de_porta
 
 sala_1 = sala(18, 23, 24, 25, 8, 7, 1, 12, 16, 20, 21, 26)
 
@@ -17,23 +18,22 @@ def initialize_settup(sala):
     GPIO.setup(7, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.add_event_detect(7, GPIO.BOTH, callback=mod_sensor_de_presenca, bouncetime = 300)
 
-def mod_sensor_de_presenca(GPIO_pin):
+    # sensor de fumaça
+    GPIO.setup(1, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.add_event_detect(1, GPIO.BOTH, callback=mod_sensor_de_fumaca, bouncetime = 300)
 
-    if sala_1.get_estado_sensor_presenca() == 0:
-        sala_1.set_estado_sensor_presenca(1)
-        print('\nsensor de presença ativado')
+    # sensor de janelas
+    GPIO.setup(12, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.add_event_detect(12, GPIO.BOTH, callback=mod_sensor_de_janela, bouncetime = 300)
 
-    elif sala_1.get_estado_sensor_presenca() == 1:
-        sala_1.set_estado_sensor_presenca(0)
-        print('\nsensor de presença desativado')
-    
+    # sensor de janelas
+    GPIO.setup(16, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.add_event_detect(16, GPIO.BOTH, callback=mod_sensor_de_porta, bouncetime = 300)
 
 
 def main():
 
     initialize_settup(sala_1)
-
-    # sala_1.control_lampadas(2,1)
 
     while(1):
         menu(sala_1)

@@ -12,8 +12,8 @@ class sala:
     alarme, 
     sensor_presenca, 
     sensor_fumaca, 
-    sensor_janela_1, 
-    sensor_janela_2, 
+    sensor_janela,
+    sensor_porta, 
     sensor_contagem_pessoas_entrada, 
     sensor_contagem_pessoas_saida, 
     sensor_temp,
@@ -24,8 +24,8 @@ class sala:
     estado_alarme = 0,
     estado_sensor_presenca = 0,
     estado_sensor_fumaca = 0,
-    estado_sensor_janela_1 = 0,
-    estado_sensor_janela_2 = 0,
+    estado_sensor_janela = 0,
+    estado_sensor_porta = 0,
     estado_sensor_contagem_pessoas_entrada = 0,
     estado_sensor_contagem_pessoas_saida = 0,
     estado_sensor_temp = 0
@@ -38,8 +38,8 @@ class sala:
         self.alarme = alarme
         self.sensor_presenca = sensor_presenca
         self.sensor_fumaca = sensor_fumaca
-        self.sensor_janela_1 = sensor_janela_1
-        self.sensor_janela_2 = sensor_janela_2
+        self.sensor_janela = sensor_janela
+        self.sensor_porta = sensor_porta
         self.sensor_contagem_pessoas_entrada = sensor_contagem_pessoas_entrada
         self.sensor_contagem_pessoas_saida = sensor_contagem_pessoas_saida
         self.sensor_temp = sensor_temp
@@ -50,8 +50,8 @@ class sala:
         self.estado_alarme = estado_alarme
         self.estado_sensor_presenca = estado_sensor_presenca
         self.estado_sensor_fumaca = estado_sensor_fumaca
-        self.estado_sensor_janela_1 = estado_sensor_janela_1
-        self.estado_sensor_janela_2 = estado_sensor_janela_2
+        self.estado_sensor_janela = estado_sensor_janela
+        self.estado_sensor_porta = estado_sensor_porta
         self.estado_sensor_contagem_pessoas_entrada = estado_sensor_contagem_pessoas_entrada
         self.estado_sensor_contagem_pessoas_saida = estado_sensor_contagem_pessoas_saida
         self.estado_sensor_temp = estado_sensor_temp
@@ -69,16 +69,36 @@ class sala:
     def get_estado_sensor_presenca(self):
         return self.estado_sensor_presenca
 
+    def set_estado_sensor_fumaca(self, estado):
+        self.estado_sensor_fumaca = estado
+    
+    def get_estado_sensor_fumaca(self):
+        return self.estado_sensor_fumaca
+
+    def set_estado_sensor_janela(self, estado):
+        self.estado_sensor_janela = estado
+
+    def get_estado_sensor_janela(self):
+        return self.estado_sensor_janela
+
+    def set_estado_sensor_porta(self, estado):
+        self.estado_sensor_porta = estado
+
+    def get_estado_sensor_porta(self):
+        return self.estado_sensor_porta
+    
+
     def controll_lamps(self, lampada, ligado):
+        print('lampada: ', lampada)
         if lampada == 1:
             led = self.lampada_1
 
         elif lampada == 2:
             led = self.lampada_2
 
-        if ligado == 1:    
+        if ligado == 1: 
             GPIO.output(led, GPIO.HIGH)
-        elif ligado == 0:
+        elif ligado == 0: 
             GPIO.output(led, GPIO.LOW)
 
     def controll_all_lamps(self, ligado):
@@ -102,9 +122,9 @@ class sala:
 
         print('------------Sensores------------')
         print('sensor de presença: ', self.estado_sensor_presenca)       
-        # print('sensor de fumaça: ', self.sensor_fumaca)
-        # print('sensor de janela 1: ', self.sensor_janela_1)
-        # print('sensor de janela 2: ', self.sensor_janela_2)
+        print('sensor de fumaça: ', self.sensor_fumaca)
+        print('sensor de janela: ', self.sensor_janela)
+        print('sensor de porta: ', self.sensor_porta)
         # print('sensor de contagem de pessoas na entrada: ', self.sensor_contagem_pessoas_entrada)
         # print('sensor de contagem de pessoas na saida: ', self.sensor_contagem_pessoas_saida)
         # print('sensor de temperatura: ', self.sensor_temp)
