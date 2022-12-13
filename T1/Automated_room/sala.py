@@ -31,6 +31,7 @@ class sala:
     estado_sensor_contagem_pessoas_saida = 0,
     estado_sensor_temp = 0,
     alarme_ativado = False,
+    umidade = 0,
     ):
 
         self.lampada_1 = lampada_1
@@ -69,33 +70,23 @@ class sala:
     def set_estado_sensor_presenca(self, estado):
         self.estado_sensor_presenca = estado
 
-    def get_estado_sensor_presenca(self):
-        return self.estado_sensor_presenca
-
     def set_estado_sensor_fumaca(self, estado):
         self.estado_sensor_fumaca = estado
-    
-    def get_estado_sensor_fumaca(self):
-        return self.estado_sensor_fumaca
 
     def set_estado_sensor_janela(self, estado):
         self.estado_sensor_janela = estado
 
-    def get_estado_sensor_janela(self):
-        return self.estado_sensor_janela
-
     def set_estado_sensor_porta(self, estado):
         self.estado_sensor_porta = estado
 
-    def get_estado_sensor_porta(self):
-        return self.estado_sensor_porta
-
     def set_estado_seguranca_alarme(self, estado):
         self.alarme_ativado = estado
-    
-    def get_estado_seguranca_alarme(self):
-        return self.alarme_ativado
-    
+
+    def set_estado_sensor_temp(self, temperatura):
+        self.estado_sensor_temp = temperatura
+
+    def set_estado_umidade(self, umidade):
+        self.umidade = umidade 
     
 
     def controll_lamps(self, lampada, ligado):
@@ -115,18 +106,34 @@ class sala:
         if ligado == 1:
             GPIO.output(self.lampada_1, GPIO.HIGH)
             GPIO.output(self.lampada_2, GPIO.HIGH)
-            # self.lampada_1.on()
-            # self.lampada_2.on()
+
             self.estado_lampada_1 = 1
             self.estado_lampada_2 = 1
 
         elif ligado == 0:
             GPIO.output(self.lampada_1, GPIO.LOW)
             GPIO.output(self.lampada_2, GPIO.LOW)
-            # self.lampada_1.off()
-            # self.lampada_2.off()
+
             self.estado_lampada_1 = 0
             self.estado_lampada_2 = 0
+
+    def control_air_conditioner(self, ligado):
+        if ligado == 1:
+            GPIO.output(self.ar_condicionado, GPIO.HIGH)
+            self.estado_ar_condicionado = 1
+
+        elif ligado == 0:
+            GPIO.output(self.ar_condicionado, GPIO.LOW)
+            self.estado_ar_condicionado = 0
+    
+    def control_projector(self, ligado):
+        if ligado == 1:
+            GPIO.output(self.projetor, GPIO.HIGH)
+            self.estado_projetor = 1
+
+        elif ligado == 0:
+            GPIO.output(self.projetor, GPIO.LOW)
+            self.estado_projetor = 0
 
     def get_all_sensors(self, sala): 
 

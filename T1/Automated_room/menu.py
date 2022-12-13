@@ -8,7 +8,10 @@ def menu(sala):
     print("4 - Acionar o sistema de seguranca")
     print("5 - Desligar o sistema de seguranca")
     print("6 - Desligar o alarme (sirene), caso esteja acionado")
-
+    print("7 - Verificar a temperatura e umidade do ambiente")
+    print("8 - Ligar/desligar o ar condicionado")
+    print("9 - Ligar/desligar o projetor")
+    print("--------------------------------------")
     sala_atual = sala
     opcao = int(input("Escolha uma opcao: "))
 
@@ -36,11 +39,11 @@ def menu(sala):
 
         if on_off == 0:
             sala_atual.controll_all_lamps(0)
-            print('Todas as lampadas foram desligadas')
+            # print('Todas as lampadas foram desligadas')
  
         elif on_off == 1:
             sala_atual.controll_all_lamps(1)
-            print('Todas as lampadas foram ligadas')
+            # print('Todas as lampadas foram ligadas')
 
     elif opcao == 3:
         print("Sensores ativos: ")
@@ -49,7 +52,6 @@ def menu(sala):
     elif opcao == 4:
         print("Sistema de seguranca ativado")
         sala_atual.set_estado_seguranca_alarme(True)
-        print(sala_atual.get_estado_seguranca_alarme())
 
     elif opcao == 5:
         print("Sistema de seguranca desativado")
@@ -62,6 +64,24 @@ def menu(sala):
             sala_atual.check_fire_alarm(0)
             print("Alarme desligado")
 
+    elif opcao == 7:
+        print(
+        "Temp: {:.1f} C    Humidity: {}% ".format(
+            sala_atual.estado_sensor_temp, sala_atual.umidade
+            )
+        )
+
+    elif opcao == 8:
+        if sala_atual.estado_ar_condicionado == 0:
+            sala_atual.control_air_conditioner(1)
+        elif sala_atual.estado_ar_condicionado == 1:
+            sala_atual.control_air_conditioner(0)
+
+    elif opcao == 9:
+        if sala_atual.estado_projetor == 0:
+            sala_atual.control_projector(1)
+        elif sala_atual.estado_projetor == 1:
+            sala_atual.control_projector(0)
         
 
 
