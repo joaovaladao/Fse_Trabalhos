@@ -1,6 +1,7 @@
+# -*- coding: utf-8 -*-
+
 from time import sleep
 import RPi.GPIO as GPIO
-# from gpiozero import LED, Button
 
 class sala:
 
@@ -28,7 +29,8 @@ class sala:
     estado_sensor_porta = 0,
     estado_sensor_contagem_pessoas_entrada = 0,
     estado_sensor_contagem_pessoas_saida = 0,
-    estado_sensor_temp = 0
+    estado_sensor_temp = 0,
+    alarme_ativado = False,
     ):
 
         self.lampada_1 = lampada_1
@@ -55,6 +57,7 @@ class sala:
         self.estado_sensor_contagem_pessoas_entrada = estado_sensor_contagem_pessoas_entrada
         self.estado_sensor_contagem_pessoas_saida = estado_sensor_contagem_pessoas_saida
         self.estado_sensor_temp = estado_sensor_temp
+        self.alarme_ativado = alarme_ativado
 
 
     def set_estado_lampada_1(self, estado):
@@ -86,6 +89,13 @@ class sala:
 
     def get_estado_sensor_porta(self):
         return self.estado_sensor_porta
+
+    def set_estado_seguranca_alarme(self, estado):
+        self.alarme_ativado = estado
+    
+    def get_estado_seguranca_alarme(self):
+        return self.alarme_ativado
+    
     
 
     def controll_lamps(self, lampada, ligado):
@@ -130,6 +140,11 @@ class sala:
         # print('sensor de temperatura: ', self.sensor_temp)
 
     def fire_alarm(self):
-        print('ALARME DE INCENDIO')
+        print('ALARME ACIONADO')
         GPIO.output(self.alarme, GPIO.HIGH)
         self.estado_alarme = 1
+
+    def check_fire_alarm(self, turn_off):
+        if turn_off == 0:
+            GPIO.output(self.alarme, GPIO.LOW)
+            self.estado_alarme = 0

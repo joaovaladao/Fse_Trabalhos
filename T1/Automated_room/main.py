@@ -1,11 +1,13 @@
+# -*- coding: utf-8 -*-
+
 #Global variables
 import RPi.GPIO as GPIO
 from menu import menu
-from sala import sala
+from global_variables import sala_1, sala_2
 from sensores import mod_sensor_de_presenca, mod_sensor_de_fumaca, mod_sensor_de_janela, mod_sensor_de_porta
 
-sala_1 = sala(18, 23, 24, 25, 11, 7, 1, 12, 16, 20, 21, 26)
-sala_2 = sala(26, 19, 13, 6, 5, 0, 11, 9, 10, 22, 27, 18)
+# sala_1 = sala(18, 23, 24, 25, 8, 7, 1, 12, 16, 20, 21, 26)
+# sala_2 = sala(26, 19, 13, 6, 5, 0, 11, 9, 10, 22, 27, 18)
 
 def initialize_settup(sala):
     # Initialize settings
