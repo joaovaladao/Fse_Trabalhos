@@ -1,3 +1,8 @@
 scp -P 13508 -r Automated_room joaobrito@164.41.98.28:~
 
 ssh joaobrito@164.41.98.28 -p 13508
+
+TCP/IP 
+
+python client_test.py 164.41.98.16
+python server_test.py 164.41.98.16

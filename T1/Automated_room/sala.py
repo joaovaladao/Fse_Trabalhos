@@ -6,6 +6,7 @@ import RPi.GPIO as GPIO
 class sala:
 
     def __init__(self, 
+    id_sala,
     lampada_1, 
     lampada_2, 
     ar_condicionado, 
@@ -34,6 +35,7 @@ class sala:
     umidade = 0,
     ):
 
+        self.id_sala = id_sala
         self.lampada_1 = lampada_1
         self.lampada_2 = lampada_2
         self.ar_condicionado = ar_condicionado
@@ -59,6 +61,7 @@ class sala:
         self.estado_sensor_contagem_pessoas_saida = estado_sensor_contagem_pessoas_saida
         self.estado_sensor_temp = estado_sensor_temp
         self.alarme_ativado = alarme_ativado
+        self.umidade = umidade
 
 
     def set_estado_lampada_1(self, estado):
