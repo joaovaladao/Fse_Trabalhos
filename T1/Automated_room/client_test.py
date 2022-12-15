@@ -41,31 +41,30 @@ def output_json(sala):
 #         print(f"Name: {sala}")
 #         print(f"Pino da lampada 1: {lampada_1}")
 
-def send_to_server(dict_mensagem):
-    # Create a socket object
-    s = socket.socket()
+def send_to_server(dict_mensagem, host, s):
+    # # Create a socket object
+    # s = socket.socket()
 
-    # Get the local machine name
-    host = sys.argv[-1]
+    # # # Get the local machine name
+    # # host = sys.argv[-1]
 
-    # Reserve a port for your service
-    port = 10495
-    s.connect((host, port))
+    # # Reserve a port for your service
+    # port = 10495
+    # s.connect((host, port))
 
     # Receive a reply from the server
-    response = s.recv(1024)
-    print(response)
+    # response = s.recv(1024)
+    # print(response)
 
     # Send a message to the server
     infos_servidor_central_enviado = json.dumps(dict_mensagem).encode('utf-8')
     s.sendall(infos_servidor_central_enviado)
 
-    s.close()
 
 
-while True:
-    json_dict = output_json(sala_1)
-    send_to_server(json_dict)
+# while True:
+#     json_dict = output_json(sala_1)
+#     send_to_server(json_dict)
 
 
 

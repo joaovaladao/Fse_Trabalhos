@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
 
 #Global variables
+import sys
 import RPi.GPIO as GPIO
 import board
 import adafruit_dht
 import time
 import threading
+import socket
 from menu import menu
 from global_variables import sala_1, sala_2
 from sensores import mod_sensor_de_presenca, mod_sensor_de_fumaca, mod_sensor_de_janela, mod_sensor_de_porta, read_temp_humidity
+from client_test import output_json, send_to_server
 
 # sala_1 = sala(18, 23, 24, 25, 8, 7, 1, 12, 16, 20, 21, 26)
 # sala_2 = sala(26, 19, 13, 6, 5, 0, 11, 9, 10, 22, 27, 18)
@@ -49,20 +52,50 @@ def initialize_settup(sala):
 def control_thread(sala, dhtDevice):
     while(1):
         read_temp_humidity(sala, dhtDevice)
-        time.sleep(2)        
+        time.sleep(2)   
+
+def control_mensages_to_server(sala, host):
+    # Create a socket object
+    s = socket.socket()
+
+    port = 10495
+    s.connect((host, port))
+
+    while(1):
+        try:
+            response = s.recv(1024)
+            print(response)
+
+            json_dict = output_json(sala)
+            send_to_server(json_dict, host, s)
+        except:
+            pass
+        # time.sleep(2)   
+
+    s.close()  
 
 
 def main():
-    
-    dhtDevice = initialize_settup(sala_1)
+    sala_exec = sys.argv[-1]
+    if sala_exec == '1':
+        sala_exec = sala_1
+    elif sala_exec == '2':
+        sala_exec = sala_2
+
+    host = sys.argv[-2]
+
+    dhtDevice = initialize_settup(sala_exec)
     # dhtDevice = adafruit_dht.DHT22(board.D4, use_pulseio=False)
 
     while(1):
-        menu(sala_1)
-        thread1 = threading.Thread(target=control_thread, args=(sala_1, dhtDevice,))
+        thread1 = threading.Thread(target=control_thread, args=(sala_exec, dhtDevice,))
         thread1.start()
+        thread2 = threading.Thread(target=control_mensages_to_server, args=(sala_exec, host,))
+        thread2.start()
+        menu(sala_exec)
 
     thread1.join()
+    thread2.join()
 
 
 

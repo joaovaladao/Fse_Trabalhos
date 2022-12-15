@@ -6,3 +6,7 @@ TCP/IP
 
 python client_test.py 164.41.98.16
 python server_test.py 164.41.98.16
+
+python main.py 164.41.98.16 1 
+
+Primeiro arg é o Host e o segundo a sala
