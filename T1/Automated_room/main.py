@@ -7,14 +7,14 @@ import board
 import adafruit_dht
 import time
 import threading
-import socket
 from menu import menu
 from global_variables import sala_1, sala_2
 from sensores import mod_sensor_de_presenca, mod_sensor_de_fumaca, mod_sensor_de_janela, mod_sensor_de_porta, read_temp_humidity
-from client_test import output_json, send_to_server
+from client_test import output_json, send_to_server, create_socket
 
 # sala_1 = sala(18, 23, 24, 25, 8, 7, 1, 12, 16, 20, 21, 26)
 # sala_2 = sala(26, 19, 13, 6, 5, 0, 11, 9, 10, 22, 27, 18)
+flag = True
 
 def initialize_settup(sala):
     # Initialize settings
@@ -56,18 +56,25 @@ def control_thread(sala, dhtDevice):
 
 def control_mensages_to_server(sala, host):
     # Create a socket object
-    s = socket.socket()
-
-    port = 10495
-    s.connect((host, port))
+    s = create_socket(host)
+    sala_str = str(sala.id_sala)
+    
+    s.sendall(str.encode(sala_str))
+    global flag
 
     while(1):
         try:
             response = s.recv(1024)
-            print(response)
+            print(type(response))
+            print(str(response))
+
+            if str(response) == "b''":
+                print("Servidor fechou a conexão, apenas as requições locais podem ser executadas...")
+                flag = False
+                break
 
             json_dict = output_json(sala)
-            send_to_server(json_dict, host, s)
+            send_to_server(json_dict, s)
         except:
             pass
         # time.sleep(2)   
@@ -76,6 +83,8 @@ def control_mensages_to_server(sala, host):
 
 
 def main():
+    global flag
+
     sala_exec = sys.argv[-1]
     if sala_exec == '1':
         sala_exec = sala_1
@@ -88,6 +97,8 @@ def main():
     # dhtDevice = adafruit_dht.DHT22(board.D4, use_pulseio=False)
 
     while(1):
+        if flag == False:
+            break
         thread1 = threading.Thread(target=control_thread, args=(sala_exec, dhtDevice,))
         thread1.start()
         thread2 = threading.Thread(target=control_mensages_to_server, args=(sala_exec, host,))
@@ -96,6 +107,7 @@ def main():
 
     thread1.join()
     thread2.join()
+    sys.exit()
 
 
 
