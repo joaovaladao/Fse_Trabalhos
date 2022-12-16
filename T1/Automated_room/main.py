@@ -10,7 +10,8 @@ import threading
 from menu import menu
 from global_variables import sala_1, sala_2
 from sensores import mod_sensor_de_presenca, mod_sensor_de_fumaca, mod_sensor_de_janela, mod_sensor_de_porta, read_temp_humidity
-from client_test import output_json, send_to_server, create_socket
+from listen_server import control_mensages_to_server
+# from client_test import output_json, send_to_server, create_socket
 
 # sala_1 = sala(18, 23, 24, 25, 8, 7, 1, 12, 16, 20, 21, 26)
 # sala_2 = sala(26, 19, 13, 6, 5, 0, 11, 9, 10, 22, 27, 18)
@@ -54,32 +55,56 @@ def control_thread(sala, dhtDevice):
         read_temp_humidity(sala, dhtDevice)
         time.sleep(2)   
 
-def control_mensages_to_server(sala, host):
-    # Create a socket object
-    s = create_socket(host)
-    sala_str = str(sala.id_sala)
+# def control_mensages_to_server(sala, host):
+#     # Create a socket object
+#     s = create_socket(host)
+#     sala_str = str(sala.id_sala)
     
-    s.sendall(str.encode(sala_str))
-    global flag
+#     s.sendall(str.encode(sala_str))
+#     global flag
 
-    while(1):
-        try:
-            response = s.recv(1024)
-            print(type(response))
-            print(str(response))
+#     while(1):
+#         try:
+#             response = s.recv(1024)
+#             print(type(response))
+#             print(str(response))
 
-            if str(response) == "b''":
-                print("Servidor fechou a conexão, apenas as requições locais podem ser executadas...")
-                flag = False
-                break
+#             if str(response) == "b''":
+#                 print("Servidor fechou a conexão, apenas as requições locais podem ser executadas...")
+#                 flag = False
+#                 break
 
-            json_dict = output_json(sala)
-            send_to_server(json_dict, s)
-        except:
-            pass
-        # time.sleep(2)   
+#             elif str(response) == "b'Send me your data!'":
+#                 json_dict = output_json(sala)
+#                 send_to_server(json_dict, s)
 
-    s.close()  
+#             elif str(response) == "b'21'":
+#                 sala_1.controll_all_lamps(0)
+#                 sala_1.control_air_conditioner(0)
+#                 sala_1.control_projector(0)
+
+#             elif str(response) == "b'22'":
+#                 sala_2.controll_all_lamps(0)
+#                 sala_2.control_air_conditioner(0)
+#                 sala_2.control_projector(0)
+
+#             elif str(response) == "b'3'":
+#                 for i in range(2):
+#                     if i == 0:
+#                         sala = sala_1
+#                     else:
+#                         sala = sala_2
+#                     sala.controll_all_lamps(0)
+#                     sala.control_air_conditioner(0)
+#                     sala.control_projector(0)
+
+#             json_dict = output_json(sala)
+#             send_to_server(json_dict, s)
+#         except:
+#             pass
+#         # time.sleep(2)   
+
+#     s.close()  
 
 
 def main():

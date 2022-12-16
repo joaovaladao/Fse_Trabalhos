@@ -2,17 +2,22 @@
 import json
 import socket
 import sys
-import threading
+from menu import menu
+from global_variables import sala_1, sala_2
 
 list_connections = [False, False, False, False]
 
 def data_receiver(conn):
     data = b'' + conn.recv(1024)
     print("Received message: " , json.loads(data.decode('utf-8')))
+    
 
 def menu_server(conn):
     print("------------Menu do Servidor------------")
     print("1 - Mostrar estado de uma sala específica")
+    print("2 - Desligar aparelhos de uma sala específica")
+    print("3 - Desligar aparelhos de todas as salas")
+    print("0 - Sair")
     print("--------------------------------------")
 
     opcao = int(input("Escolha uma opcao: "))
@@ -27,6 +32,22 @@ def menu_server(conn):
             
         conn.sendall(str.encode("Send me your data!"))
         data_receiver(conn)
+
+    elif opcao == 2:
+        print("Insira o numero da sala")
+        sala = int(input("Sala: "))
+        if sala == 1:
+            conn = list_connections[1]
+            conn.sendall(str.encode("21"))
+        elif sala == 2:
+            conn = list_connections[2]
+            conn.sendall(str.encode("22"))
+
+    elif opcao == 3:
+        for i in range(1, 3):
+            conn = list_connections[i]
+            conn.sendall(str.encode("3"))
+
 
     elif opcao == 0:
         print('Closing server...')
@@ -66,8 +87,6 @@ try:
 
     while True:
 
-        # thread = threading.Thread(target=menu_server, args=(conn,))
-        # thread.start()
         menu_server(conn)
 
         # dict_salas[conn.recv(1024).decode('utf-8')] = conn
