@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
-
 import RPi.GPIO as GPIO
 
 from global_variables import sala_1, sala_2
 
-# sala_1 = sala(18, 23, 24, 25, 8, 7, 1, 12, 16, 20, 21, 26)
-# sala_2 = sala(26, 19, 13, 6, 5, 0, 11, 9, 10, 22, 27, 18)
 
 def mod_sensor_de_presenca(GPIO_pin):
     if GPIO_pin == 7:
@@ -89,16 +86,14 @@ def get_seguranca_alarme(sala_atual):
     return sala_atual.alarme_ativado
 
 def read_temp_humidity(sala, dhtDevice):
-    # time.sleep(2)
     try:
-        # Print the values to the serial port
         temperature_c = dhtDevice.temperature
         humidity = dhtDevice.humidity
 
-        sala.set_estado_sensor_temp(temperature_c)
-        sala.set_estado_umidade(humidity)
+        if temperature_c is not None and humidity is not None:
+            sala.set_estado_sensor_temp(temperature_c)
+            sala.set_estado_umidade(humidity)
 
     except RuntimeError as error:
         # Errors happen fairly often, DHT's are hard to read, just keep going
-        #print(error.args[0])
         pass

@@ -39,11 +39,9 @@ def menu(sala):
 
         if on_off == 0:
             sala_atual.controll_all_lamps(0)
-            # print('Todas as lampadas foram desligadas')
  
         elif on_off == 1:
             sala_atual.controll_all_lamps(1)
-            # print('Todas as lampadas foram ligadas')
 
     elif opcao == 3:
         print("Sensores ativos: ")

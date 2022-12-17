@@ -20,8 +20,6 @@ def output_json(sala):
         {'sensor_temp' : sala.sensor_temp, 'estado_sensor_temp' : sala.estado_sensor_temp},
         {'umidade' : sala.umidade}
     ]
-
-    #print(d)
     return d
 
 def send_to_server(dict_mensagem, s):
@@ -32,7 +30,7 @@ def send_to_server(dict_mensagem, s):
 def create_socket(host):
     s = socket.socket()
 
-    port = 10495
+    port = 10492
     s.connect((host, port))
 
     return s

@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-
-from time import sleep
 import RPi.GPIO as GPIO
 
 class sala:
@@ -93,7 +91,6 @@ class sala:
     
 
     def controll_lamps(self, lampada, ligado):
-        print('lampada: ', lampada)
         if lampada == 1:
             led = self.lampada_1
 

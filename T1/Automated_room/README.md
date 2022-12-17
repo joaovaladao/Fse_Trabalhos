@@ -150,7 +150,7 @@ ssh joaobrito@164.41.98.26 -p 13508
     - Exemplo:
 
     ```
-    python main.py 164.41.98.26 2
+    python main.py 164.41.98.16 2
     ```
 
 
