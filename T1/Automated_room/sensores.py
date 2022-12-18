@@ -82,6 +82,22 @@ def mod_sensor_de_porta(GPIO_pin):
         sala_atual.set_estado_sensor_porta(0)
         print('\nsensor de porta desativado')
 
+def aumenta_contagem_pessoas(GPIO_pin):
+    if GPIO_pin == 20:
+        sala_atual = sala_1
+    else:
+        sala_atual = sala_2
+
+    sala_atual.set_estado_contagem_pessoas(sala_atual.estado_sensor_contagem_pessoas_entrada + 1)
+
+def diminui_contagem_pessoas(GPIO_pin):
+    if GPIO_pin == 21:
+        sala_atual = sala_1
+    else:
+        sala_atual = sala_2
+
+    sala_atual.set_estado_contagem_pessoas(sala_atual.estado_sensor_contagem_pessoas_entrada - 1)
+
 def get_seguranca_alarme(sala_atual):   
     return sala_atual.alarme_ativado
 

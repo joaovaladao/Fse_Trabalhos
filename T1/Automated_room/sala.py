@@ -89,6 +89,10 @@ class sala:
     def set_estado_umidade(self, umidade):
         self.umidade = umidade 
     
+    def set_estado_contagem_pessoas(self, estado):
+        if estado >= 0:
+            self.estado_sensor_contagem_pessoas_entrada = estado
+    
 
     def controll_lamps(self, lampada, ligado):
         if lampada == 1:

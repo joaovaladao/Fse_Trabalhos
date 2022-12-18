@@ -9,7 +9,7 @@ import time
 import threading
 from menu import menu
 from global_variables import sala_1, sala_2
-from sensores import mod_sensor_de_presenca, mod_sensor_de_fumaca, mod_sensor_de_janela, mod_sensor_de_porta, read_temp_humidity
+from sensores import mod_sensor_de_presenca, mod_sensor_de_fumaca, mod_sensor_de_janela, mod_sensor_de_porta, read_temp_humidity, aumenta_contagem_pessoas, diminui_contagem_pessoas
 from listen_server import control_mensages_to_server
 
 flag = True
@@ -40,6 +40,13 @@ def initialize_settup(sala):
     GPIO.setup(sala.sensor_porta, GPIO.IN, pull_up_down=GPIO.PUD_UP)
     GPIO.add_event_detect(sala.sensor_porta, GPIO.BOTH, callback=mod_sensor_de_porta, bouncetime = 300)
 
+    # sensor contagem de pessoas
+    GPIO.setup(sala.sensor_contagem_pessoas_entrada, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.add_event_detect(sala.sensor_contagem_pessoas_entrada, GPIO.RISING, callback=aumenta_contagem_pessoas, bouncetime = 300)
+
+    GPIO.setup(sala.sensor_contagem_pessoas_saida, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+    GPIO.add_event_detect(sala.sensor_contagem_pessoas_saida, GPIO.RISING, callback=diminui_contagem_pessoas, bouncetime = 300)
+
     if sala.lampada_1 == 18:
         return adafruit_dht.DHT22(board.D4, use_pulseio=False)
 
@@ -64,6 +71,9 @@ def main():
     host = sys.argv[-2]
 
     dhtDevice = initialize_settup(sala_exec)
+
+    print("Insira a quantidade de pessoas na sala neste momento: ")
+    sala_exec.set_estado_contagem_pessoas(int(input()))
 
     while(1):
         if flag == False:

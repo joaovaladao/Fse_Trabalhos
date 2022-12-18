@@ -1,7 +1,7 @@
 import json
 
 def data_receiver(data):
-    print(json.loads(data.decode('utf-8')))
+    # print(json.loads(data.decode('utf-8')))
     data_decoded = json.loads(data.decode('utf-8'))
     print("---------------------------------------------------")
     print("Sala: " , data_decoded['sala'])
@@ -16,6 +16,7 @@ def data_receiver(data):
     print("Sensor de porta: " , data_decoded['dados'][8]['estado_sensor_porta'])
     print("Temperatura: " , data_decoded['dados'][11]['estado_sensor_temp'])
     print("Umidade: " , data_decoded['dados'][12]['umidade'])
+    print("Quantidade de pessoas na sala: " , data_decoded['dados'][9]['estado_sensor_contagem_pessoas_entrada'])
     print("---------------------------------------------------" + "\n")
     
 def debug_data_receiver(data):

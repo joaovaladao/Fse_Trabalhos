@@ -30,7 +30,7 @@ def send_to_server(dict_mensagem, s):
 def create_socket(host):
     s = socket.socket()
 
-    port = 10492
+    port = 10493
     s.connect((host, port))
 
     return s
