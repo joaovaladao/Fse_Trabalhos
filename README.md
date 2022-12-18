@@ -157,4 +157,5 @@ ssh joaobrito@164.41.98.26 -p 13508
 9) Para terminar a execução pressione **CONTROL+C** duas vezes em cada terminal depois de finalizar conexão com o servidor
 
 ## Observações 
-Não implentado os as funções de contagem de pessoas de cada sala e nem o log (em arquivo CSV) dos comandos acionados. Assim como, os alarmes só disparam localmente o sensor de fumaça e alarme.
+Não implentado o log (em arquivo CSV) dos comandos acionados, outro problema no código é que os alarmes só disparam localmente na sala em que o sensor identificou alguma irregularidade.
+
