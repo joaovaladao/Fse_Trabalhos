@@ -17,10 +17,8 @@ def mod_sensor_de_presenca(GPIO_pin):
         if on_off == True:
             sala_atual.fire_alarm()
         else:
-            if sala_atual.estado_lampada_1 == 0 and sala_atual.estado_lampada_2 == 0:
+            if sala_atual.estado_sensor_contagem_pessoas_entrada == 0:
                 sala_atual.controll_all_lamps(1)
-            else:
-                print('\nLampadas já estavam ligadas')
                 
     elif sala_atual.estado_sensor_presenca == 1:
         sala_atual.set_estado_sensor_presenca(0)

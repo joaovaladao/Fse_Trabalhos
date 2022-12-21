@@ -48,8 +48,13 @@ def menu(sala):
         sala_atual.get_all_sensors(sala_atual)
 
     elif opcao == 4:
-        print("Sistema de seguranca ativado")
-        sala_atual.set_estado_seguranca_alarme(True)
+        if(sala_atual.estado_alarme == 1):
+            print("Sistema de segurança já está ligado")
+        elif(sala_atual.estado_sensor_janela == 1 or sala_atual.estado_sensor_porta == 1 or sala_atual.estado_sensor_presenca == 1):
+            print("O Sistema de segurança não pode ser ativado pois há pelo menos um sensor ativo")
+        else:
+            print("Sistema de seguranca ativado")
+            sala_atual.set_estado_seguranca_alarme(True)
 
     elif opcao == 5:
         print("Sistema de seguranca desativado")
