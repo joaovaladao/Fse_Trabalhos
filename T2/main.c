@@ -1,14 +1,14 @@
 #include <stdio.h>
-#include <signal.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <wiringPiI2C.h>
-#include <wiringPi.h>
 #include <softPwm.h>
 #include <time.h>
 
 #include "UART/uart.h"
+#include "PID/pid.h"
+
+unsigned char solicitaTempInterna[7] = {0x01, 0x23, 0xC1, 3, 4, 3, 1};
 
 //void init_gpio(void){
 
@@ -17,6 +17,11 @@
 
 //}
 
+
+// void init_estado(){
+//     pid_configura_constantes(30.0, 0.2, 400.0);
+// }
+
 int main(){
     printf("-------- Estruturando o programa --------\n");
 
@@ -24,6 +29,9 @@ int main(){
     init_uart();
     //init_i2c();
     //init_estado();
+
+    requestFloat(solicitaTempInterna);
+    sleep(1);
 
     close_uart();
     }
