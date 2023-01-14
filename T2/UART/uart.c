@@ -31,6 +31,15 @@ void close_uart(){
     close(uart0_filestream);
 }
 
+int checkCrc(char conteudoRecebido[]){
+    short crc = calcula_CRC(conteudoRecebido, 7);
+
+    if ((crc & 0xFF) == conteudoRecebido[7] && ((crc >> 8) & 0xFF) == conteudoRecebido[8])
+        return 1;
+
+    return 0;
+}
+
 float requestFloat(char cmd[]){
 
     unsigned char tx_buffer[20];
@@ -62,4 +71,31 @@ float requestFloat(char cmd[]){
             printf("escrito.\n");
         }
     }
+
+    if (uart0_filestream != -1){
+        unsigned char rx_buffer[9];
+        int rx_length = read(uart0_filestream, &rx_buffer, 9); // Filestream, buffer to store in, number of bytes to read (max)
+
+        int tentativa = 0;
+
+        for (tentativa = 0; tentativa < 5; tentativa++){
+
+            if (checkCrc(rx_buffer)){
+                break;
+            }
+            else{
+                requestFloat(cmd);
+            }
+        }
+
+        if (tentativa == 5 || rx_length <= 0 ){
+            return 0;
+        }
+        else{
+            unsigned char floats[4] = {rx_buffer[3], rx_buffer[4], rx_buffer[5], rx_buffer[6]};
+            float f = *((float *)&floats);
+            return f;
+        }
+    }
+
 }

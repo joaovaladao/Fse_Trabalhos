@@ -10,28 +10,36 @@
 
 unsigned char solicitaTempInterna[7] = {0x01, 0x23, 0xC1, 3, 4, 3, 1};
 
-//void init_gpio(void){
+const int init_gpio(){
 
     const int PWMpinRes = 4; // WiringPI GPIO 23
     const int PWMpinVet = 5; // WiringPI GPIO 24
 
-//}
+    return PWMpinRes, PWMpinVet;
+}
 
 
 // void init_estado(){
 //     pid_configura_constantes(30.0, 0.2, 400.0);
 // }
 
+void loop(){
+    float TempInterna = requestFloat(solicitaTempInterna);
+    printf("Temperatura Interna: %f\n", TempInterna);
+}
+
 int main(){
     printf("-------- Estruturando o programa --------\n");
+    const int PWMpinRes, PWMpinVet = init_gpio();
 
-    //init_gpio();
     init_uart();
     //init_i2c();
     //init_estado();
 
-    requestFloat(solicitaTempInterna);
-    sleep(1);
+    while(1){
+        loop();
+        sleep(1);
+    }
 
     close_uart();
     }
