@@ -58,17 +58,14 @@ float requestFloat(char cmd[]){
     *p_tx_buffer++ = crc & 0xFF;
     *p_tx_buffer++ = (crc >> 8) & 0xFF;
 
-    printf("Buffers de memória criados!\n");
+    //printf("Buffers de memória criados!\n");
 
     if (uart0_filestream != -1){
-        printf("Escrevendo caracteres na UART ...");
+        //printf("Escrevendo caracteres na UART ...");
         int count = write(uart0_filestream, &tx_buffer[0], (p_tx_buffer - &tx_buffer[0]));
         if (count < 0){
             return 0;
             printf("UART TX error\n");
-        }
-        else{
-            printf("escrito.\n");
         }
     }
 
@@ -87,6 +84,9 @@ float requestFloat(char cmd[]){
                 requestFloat(cmd);
             }
         }
+        printf(".");
+
+        usleep(700000);
 
         if (tentativa == 5 || rx_length <= 0 ){
             return 0;
