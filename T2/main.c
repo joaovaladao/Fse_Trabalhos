@@ -14,6 +14,11 @@ unsigned char solicitaTempRef[7] = {0x01, 0x23, 0xC2, 3, 4, 3, 1};
 unsigned char comandoUsuario[7] = {0x01, 0x23, 0xC3, 3, 4, 3, 1};
 unsigned char enviaInt[7] = {0x01, 0x16, 0xD1, 3, 4, 3, 1};
 
+unsigned char ligarSistema[8] = {0x01, 0x16, 0xD3, 3, 4, 3, 1, 1};
+unsigned char desligarSistema[8] = {0x01, 0x16, 0xD3, 3, 4, 3, 1, 0};
+unsigned char algoritmoFuncion[8] = {0x01, 0x16, 0xD5, 3, 4, 3, 1, 1};
+unsigned char algoritmoParado[8] = {0x01, 0x16, 0xD5, 3, 4, 3, 1, 0};
+
 double pidRes = 0.0;
 
 const int init_gpio(){
@@ -37,6 +42,8 @@ const int init_gpio(){
 
 void init_estado(){
     pid_configura_constantes(30.0, 0.2, 400.0);
+    sendSignal(desligarSistema, 0);
+    sendSignal(algoritmoParado, 0);
 }
 
 void delay(unsigned milliseconds)
@@ -62,18 +69,22 @@ void loop(const int PWMpinRes, const int PWMpinVet){
     printf("Comando do Usuario: %d\n", usuario);
 
     if (usuario == 161){
-        printf("Ligar");
+        printf("Ligar Sistema\n");
+        sendSignal(ligarSistema, 1);
     }
     else if (usuario == 162){
-        printf("Desligar");
+        printf("Desligar Sistema\n");
+        sendSignal(desligarSistema, 0);
     }
 
     else if (usuario == 163){
-        printf("Iniciar");
+        printf("Algoritmo Iniciado\n");
+        sendSignal(algoritmoFuncion, 1);
     }
 
     else if (usuario == 164){
-        printf("Parar");
+        printf("Algoritmo Parado\n");
+        sendSignal(algoritmoParado, 0);
     }
 
     if(pidRes > -40 && pidRes < 0){
