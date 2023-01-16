@@ -12,6 +12,7 @@
 unsigned char solicitaTempInterna[7] = {0x01, 0x23, 0xC1, 3, 4, 3, 1};
 unsigned char solicitaTempRef[7] = {0x01, 0x23, 0xC2, 3, 4, 3, 1};
 unsigned char comandoUsuario[7] = {0x01, 0x23, 0xC3, 3, 4, 3, 1};
+unsigned char enviaInt[7] = {0x01, 0x16, 0xD1, 3, 4, 3, 1};
 
 double pidRes = 0.0;
 
@@ -57,8 +58,6 @@ void loop(const int PWMpinRes, const int PWMpinVet){
     printf("Temperatura Interna: %f\n", TempInterna);
     pidRes = pid_controle(TempInterna);
 
-    printf("PID: %f\n", pidRes);
-
     int usuario = requestInt(comandoUsuario);
     printf("Comando do Usuario: %d\n", usuario);
 
@@ -77,11 +76,12 @@ void loop(const int PWMpinRes, const int PWMpinVet){
         printf("Parar");
     }
 
-    //sendInt(pidRes);
-
     if(pidRes > -40 && pidRes < 0){
         pidRes = -40; 
     }
+
+    printf("PID: %f\n", pidRes);
+    sendInt(enviaInt, pidRes);
 
     if (pidRes < 0){
             softPwmWrite(PWMpinRes, 0);

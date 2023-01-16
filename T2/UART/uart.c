@@ -160,3 +160,43 @@ int requestInt(char cmd[]){
         }
     }
 }
+
+int sendInt(char cmd[], int x){
+    unsigned char tx_buffer[50];
+    unsigned char *p_tx_buffer;
+
+    p_tx_buffer = &tx_buffer[0];
+    *p_tx_buffer++ = cmd[0];
+    *p_tx_buffer++ = cmd[1];
+    *p_tx_buffer++ = cmd[2];
+    *p_tx_buffer++ = cmd[3];
+    *p_tx_buffer++ = cmd[4];
+    *p_tx_buffer++ = cmd[5];
+    *p_tx_buffer++ = cmd[6];
+
+    *p_tx_buffer++ = x & 0xFF;
+    *p_tx_buffer++ = (x >> 8) & 0xFF;
+    *p_tx_buffer++ = (x >> 16) & 0xFF;
+    *p_tx_buffer++ = (x >> 24) & 0xFF;
+
+    short crc = calcula_CRC(&tx_buffer[0], (p_tx_buffer - &tx_buffer[0]));
+
+    *p_tx_buffer++ = crc & 0xFF;
+    *p_tx_buffer++ = (crc >> 8) & 0xFF;
+
+
+    if (uart0_filestream != -1){
+        int count = write(uart0_filestream, &tx_buffer[0], (p_tx_buffer - &tx_buffer[0]));
+        // printf("\nXXXXX enviando: %d\n", count);
+
+        if (count < 0){
+            return 0;
+        }
+        else{
+            return 1;
+        }
+
+    }
+
+    usleep(700000);
+}
