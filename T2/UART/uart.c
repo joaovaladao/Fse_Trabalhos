@@ -31,6 +31,18 @@ void close_uart(){
     close(uart0_filestream);
 }
 
+int checkCrc(char conteudoRecebido[]){
+    short crc = calcula_CRC(conteudoRecebido, 7);
+
+    // printf("%i %i\n", (crc & 0xFF), conteudoRecebido[7]);
+    // printf("%i %i\n", ((crc >> 8) & 0xFF), conteudoRecebido[8]);
+
+    if ((crc & 0xFF) == conteudoRecebido[7] && ((crc >> 8) & 0xFF) == conteudoRecebido[8])
+        return 1;
+
+    return 0;
+}
+
 float requestFloat(char cmd[]){
     unsigned char tx_buffer[20];
     unsigned char *p_tx_buffer;
@@ -76,6 +88,75 @@ float requestFloat(char cmd[]){
             unsigned char temp[4] = {rx_buffer[3], rx_buffer[4], rx_buffer[5], rx_buffer[6]};
             float temperatura = *((float *)&temp);
             return temperatura;
+        }
+    }
+}
+
+int requestInt(char cmd[]){
+    unsigned char tx_buffer[20];
+    unsigned char *p_tx_buffer;
+
+    p_tx_buffer = &tx_buffer[0];
+    *p_tx_buffer++ = cmd[0];
+    *p_tx_buffer++ = cmd[1];
+    *p_tx_buffer++ = cmd[2];
+    *p_tx_buffer++ = cmd[3];
+    *p_tx_buffer++ = cmd[4];
+    *p_tx_buffer++ = cmd[5];
+    *p_tx_buffer++ = cmd[6];
+
+    short crc = calcula_CRC(&tx_buffer[0], (p_tx_buffer - &tx_buffer[0]));
+
+    *p_tx_buffer++ = crc & 0xFF;
+    *p_tx_buffer++ = (crc >> 8) & 0xFF;
+
+    // printf("Buffers de memória criados!\n");
+
+    if (uart0_filestream != -1){
+
+        // printf("Escrevendo caracteres na UART ...");
+        int count = write(uart0_filestream, &tx_buffer[0], (p_tx_buffer - &tx_buffer[0]));
+
+        if (count < 0){
+            // printf("UART TX error\n");
+            return 0;
+        }
+    }
+
+    usleep(700000);
+    //----- CHECK FOR ANY RX BYTES -----
+
+    if (uart0_filestream != -1){
+        unsigned char rx_buffer[9];
+
+        int rx_length = read(uart0_filestream, &rx_buffer, 9); // Filestream, buffer to store in, number of bytes to read (max)
+        int tentativa = 0;
+
+
+        for (tentativa = 0; tentativa < 5; tentativa++){
+            if (checkCrc(rx_buffer)){
+                break;
+            }
+            else{
+                requestInt(cmd);
+            }
+        }
+
+        if (tentativa == 5){
+            // printf("Erros ao lidar com CRC");
+            return -1;
+        }
+        if (rx_length < 0){
+            return -1;
+            // printf("Erro na leitura.\n"); // An error occured (will occur if there are no bytes)
+        }
+        else if (rx_length == 0){
+            return -1;
+            // printf("Nenhum dado disponível.\n"); // No data waiting
+        }
+        else{
+            int x = rx_buffer[3] + (rx_buffer[4] << 8) + (rx_buffer[5] << 16) + (rx_buffer[6] << 24);
+            return x;
         }
     }
 }

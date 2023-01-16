@@ -5,5 +5,6 @@ void init_uart();
 void close_uart();
 
 float requestFloat(char cmd[]);
+int requestInt(char cmd[]);
 
 #endif
