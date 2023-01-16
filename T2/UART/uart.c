@@ -31,17 +31,7 @@ void close_uart(){
     close(uart0_filestream);
 }
 
-int checkCrc(char conteudoRecebido[]){
-    short crc = calcula_CRC(conteudoRecebido, 7);
-
-    if ((crc & 0xFF) == conteudoRecebido[7] && ((crc >> 8) & 0xFF) == conteudoRecebido[8])
-        return 1;
-
-    return 0;
-}
-
 float requestFloat(char cmd[]){
-
     unsigned char tx_buffer[20];
     unsigned char *p_tx_buffer;
 
@@ -54,48 +44,38 @@ float requestFloat(char cmd[]){
     *p_tx_buffer++ = cmd[5];
     *p_tx_buffer++ = cmd[6];
 
+
     short crc = calcula_CRC(&tx_buffer[0], (p_tx_buffer - &tx_buffer[0]));
     *p_tx_buffer++ = crc & 0xFF;
     *p_tx_buffer++ = (crc >> 8) & 0xFF;
 
-    //printf("Buffers de memória criados!\n");
-
     if (uart0_filestream != -1){
-        //printf("Escrevendo caracteres na UART ...");
-        int count = write(uart0_filestream, &tx_buffer[0], (p_tx_buffer - &tx_buffer[0]));
-        if (count < 0){
-            return 0;
+        int escreve_uart = write(uart0_filestream, &tx_buffer[0], (p_tx_buffer - &tx_buffer[0]));
+        if (escreve_uart < 0){
             printf("UART TX error\n");
+            return 0;
         }
     }
+
+    usleep(700000);
 
     if (uart0_filestream != -1){
         unsigned char rx_buffer[9];
-        int rx_length = read(uart0_filestream, &rx_buffer, 9); // Filestream, buffer to store in, number of bytes to read (max)
+        int rx_length = read(uart0_filestream, rx_buffer, 9);
 
-        int tentativa = 0;
-
-        for (tentativa = 0; tentativa < 5; tentativa++){
-
-            if (checkCrc(rx_buffer)){
-                break;
-            }
-            else{
-                requestFloat(cmd);
-            }
+        short crc = calcula_CRC(rx_buffer, 7);
+        if((crc & 0xFF) != rx_buffer[7] && ((crc >> 8) & 0xFF) != rx_buffer[8]){
+            printf("Erro de CRC\n");
+            requestFloat(cmd);
         }
-        printf(".");
 
-        usleep(700000);
-
-        if (tentativa == 5 || rx_length <= 0 ){
+        if (rx_length <= 0){
             return 0;
         }
         else{
-            unsigned char floats[4] = {rx_buffer[3], rx_buffer[4], rx_buffer[5], rx_buffer[6]};
-            float f = *((float *)&floats);
-            return f;
+            unsigned char temp[4] = {rx_buffer[3], rx_buffer[4], rx_buffer[5], rx_buffer[6]};
+            float temperatura = *((float *)&temp);
+            return temperatura;
         }
     }
-
 }

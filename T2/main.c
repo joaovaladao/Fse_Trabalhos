@@ -25,18 +25,12 @@ const int init_gpio(){
 //     pid_configura_constantes(30.0, 0.2, 400.0);
 // }
 
-void pid_atualiza_referencia(float referencia_){
-    referencia = (double) referencia_;
-    printf("Temperatura Referencia2: %f\n", referencia);
-}
-
 void loop(){
     float TempInterna = requestFloat(solicitaTempInterna);
     printf("Temperatura Interna: %f\n", TempInterna);
+
     float TempReferencia = requestFloat(solicitaTempRef);
-    pid_atualiza_referencia(TempReferencia);
-    
-    printf("Temperatura Referencia1: %f\n", TempReferencia);
+    printf("Temperatura Referencia: %f\n", TempReferencia);
 }
 
 int main(){
@@ -49,7 +43,6 @@ int main(){
 
     while(1){
         loop();
-        sleep(1);
     }
 
     close_uart();
