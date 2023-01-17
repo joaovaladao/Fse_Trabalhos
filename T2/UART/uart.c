@@ -259,7 +259,7 @@ int sendSignal(char cmd[]){
 }
 
 int sendFloat(char cmd[], float f){
-    printf("Valor enviado pela função SendFloat: %f\n",f);
+    //printf("Valor enviado pela função SendFloat: %f\n",f);
     unsigned char tx_buffer[50];
     unsigned char *p_tx_buffer;
 

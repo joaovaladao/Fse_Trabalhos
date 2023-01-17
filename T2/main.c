@@ -25,7 +25,7 @@ unsigned char desativacurva[8] = {0x01, 0x16, 0xD4, 3, 4, 3, 1, 0};
 unsigned char enviaReferencia[7] = {0x01, 0x16, 0xD2, 3, 4, 3, 1};
 
 // double pidRes = 0.0;
-int curva, algoritmoIniciado, sistemaLigado;
+int curva, algoritmoIniciado, sistemaLigado, count;
 float TempReferencia = 0.0;
 
 const int init_gpio(){
@@ -55,6 +55,7 @@ void init_estado(){
     curva = 0;
     sistemaLigado = 0;
     algoritmoIniciado = 0;
+    count = 1;
 }
 
 void delay(unsigned milliseconds)
@@ -138,36 +139,41 @@ void loop(const int PWMpinRes, const int PWMpinVet){
     }
 
     else if(curva == 1){
-        TempReferencia = 25.0;
-        printf("Nova Temperatura Referencia (Curva): %f\n", TempReferencia);
+        printf("Curva ativada\n");
+        if (count > 0 && count < 30)
+            TempReferencia = 25.0;
+        else if (count >= 30 && count < 60)
+            TempReferencia = 38.0;
+        else if (count >= 60 && count < 120)
+            TempReferencia = 46.0;
+        else if (count >= 120 && count < 130)
+            TempReferencia = 57.0;
+        else if (count >= 130 && count < 150)
+            TempReferencia = 61.0;
+        else if (count >= 150 && count < 180)
+            TempReferencia = 63.0;
+        else if (count >= 180 && count < 210)
+            TempReferencia = 54.0;
+        else if (count >= 210 && count < 240)
+            TempReferencia = 33.0;
+        else if (count >= 240 && count < 300)
+            TempReferencia = 25.0;
+        else{
+            curva = 0;
+            count = 0;
+            sendSignal(desativacurva, 0);
+        }
+
+        printf("Nova Temperatura Referencia (Curva): %f         ", TempReferencia);
+        printf("Segundos: %d\n", count*2);
         pid_atualiza_referencia(TempReferencia);
+        sendFloat(enviaReferencia, TempReferencia);
+        count++;
     }
 
     float TempInterna = requestFloat(solicitaTempInterna);
     printf("Temperatura Interna: %f\n", TempInterna);
     double pidRes = pid_controle(TempInterna);
-
-    // int usuario = requestInt(comandoUsuario);
-    // printf("Comando do Usuario: %d\n", usuario);
-
-    // if (usuario == 161){
-    //     printf("Ligar Sistema\n");
-    //     sendSignal(ligarSistema, 1);
-    // }
-    // else if (usuario == 162){
-    //     printf("Desligar Sistema\n");
-    //     sendSignal(desligarSistema, 0);
-    // }
-
-    // else if (usuario == 163){
-    //     printf("Algoritmo Iniciado\n");
-    //     sendSignal(algoritmoFuncion, 1);
-    // }
-
-    // else if (usuario == 164){
-    //     printf("Algoritmo Parado\n");
-    //     sendSignal(algoritmoParado, 0);
-    // }
 
     if (usuario == 165){
         if(curva == 0){
