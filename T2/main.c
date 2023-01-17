@@ -19,7 +19,14 @@ unsigned char desligarSistema[8] = {0x01, 0x16, 0xD3, 3, 4, 3, 1, 0};
 unsigned char algoritmoFuncion[8] = {0x01, 0x16, 0xD5, 3, 4, 3, 1, 1};
 unsigned char algoritmoParado[8] = {0x01, 0x16, 0xD5, 3, 4, 3, 1, 0};
 
-double pidRes = 0.0;
+unsigned char ativacurva[8] = {0x01, 0x16, 0xD4, 3, 4, 3, 1, 1};
+unsigned char desativacurva[8] = {0x01, 0x16, 0xD4, 3, 4, 3, 1, 0};
+
+unsigned char enviaReferencia[7] = {0x01, 0x16, 0xD2, 3, 4, 3, 1};
+
+// double pidRes = 0.0;
+int curva, algoritmoIniciado, sistemaLigado;
+float TempReferencia = 0.0;
 
 const int init_gpio(){
 
@@ -44,6 +51,10 @@ void init_estado(){
     pid_configura_constantes(30.0, 0.2, 400.0);
     sendSignal(desligarSistema, 0);
     sendSignal(algoritmoParado, 0);
+    sendSignal(desativacurva, 0);
+    curva = 0;
+    sistemaLigado = 0;
+    algoritmoIniciado = 0;
 }
 
 void delay(unsigned milliseconds)
@@ -56,36 +67,7 @@ void delay(unsigned milliseconds)
     while( (clock() - start) < pause );
 }
 
-void loop(const int PWMpinRes, const int PWMpinVet){
-    float TempReferencia = requestFloat(solicitaTempRef);
-    printf("Temperatura Referencia: %f\n", TempReferencia);
-    pid_atualiza_referencia(TempReferencia);
-
-    float TempInterna = requestFloat(solicitaTempInterna);
-    printf("Temperatura Interna: %f\n", TempInterna);
-    pidRes = pid_controle(TempInterna);
-
-    int usuario = requestInt(comandoUsuario);
-    printf("Comando do Usuario: %d\n", usuario);
-
-    if (usuario == 161){
-        printf("Ligar Sistema\n");
-        sendSignal(ligarSistema, 1);
-    }
-    else if (usuario == 162){
-        printf("Desligar Sistema\n");
-        sendSignal(desligarSistema, 0);
-    }
-
-    else if (usuario == 163){
-        printf("Algoritmo Iniciado\n");
-        sendSignal(algoritmoFuncion, 1);
-    }
-
-    else if (usuario == 164){
-        printf("Algoritmo Parado\n");
-        sendSignal(algoritmoParado, 0);
-    }
+void pid_activation(double pidRes, const int PWMpinRes, const int PWMpinVet){
 
     if(pidRes > -40 && pidRes < 0){
         pidRes = -40; 
@@ -106,8 +88,103 @@ void loop(const int PWMpinRes, const int PWMpinVet){
             delay(0.7);
             softPwmWrite(PWMpinRes, pidRes);
             delay(0.7);
+        }   
+}
+
+void loop(const int PWMpinRes, const int PWMpinVet){
+
+    int usuario = requestInt(comandoUsuario);
+    printf("Comando do Usuario: %d\n", usuario);
+
+    if (usuario == 161){
+        printf("Ligar Sistema\n");
+        sendSignal(ligarSistema, 1);
+        sistemaLigado = 1;
+    }
+    else if (usuario == 162){
+        printf("Desligar Sistema\n");
+        sendSignal(desligarSistema, 0);
+        sistemaLigado = 0;
+    }
+
+    else if (usuario == 163){
+        printf("Algoritmo Iniciado\n");
+        sendSignal(algoritmoFuncion, 1);
+        algoritmoIniciado = 1;
+    }
+
+    else if (usuario == 164){
+        printf("Algoritmo Parado\n");
+        sendSignal(algoritmoParado, 0);
+        algoritmoIniciado = 0;
+    }
+
+    if(sistemaLigado == 0){
+        printf("Sistema desligado, por favor ligue o sistema\n");
+        sleep(2);
+        return;
+    }
+
+    if(algoritmoIniciado == 0){
+        printf("Algoritmo desligado, por favor inicie o software\n");
+        sleep(2);
+        return;
+    }
+
+    if(curva == 0){
+        TempReferencia = requestFloat(solicitaTempRef);
+        printf("Temperatura Referencia: %f\n", TempReferencia);
+        pid_atualiza_referencia(TempReferencia);
+    }
+
+    else if(curva == 1){
+        TempReferencia = 25.0;
+        printf("Nova Temperatura Referencia (Curva): %f\n", TempReferencia);
+        pid_atualiza_referencia(TempReferencia);
+    }
+
+    float TempInterna = requestFloat(solicitaTempInterna);
+    printf("Temperatura Interna: %f\n", TempInterna);
+    double pidRes = pid_controle(TempInterna);
+
+    // int usuario = requestInt(comandoUsuario);
+    // printf("Comando do Usuario: %d\n", usuario);
+
+    // if (usuario == 161){
+    //     printf("Ligar Sistema\n");
+    //     sendSignal(ligarSistema, 1);
+    // }
+    // else if (usuario == 162){
+    //     printf("Desligar Sistema\n");
+    //     sendSignal(desligarSistema, 0);
+    // }
+
+    // else if (usuario == 163){
+    //     printf("Algoritmo Iniciado\n");
+    //     sendSignal(algoritmoFuncion, 1);
+    // }
+
+    // else if (usuario == 164){
+    //     printf("Algoritmo Parado\n");
+    //     sendSignal(algoritmoParado, 0);
+    // }
+
+    if (usuario == 165){
+        if(curva == 0){
+            curva = 1;
+            sendSignal(ativacurva, 1);
+            float newref = 25.0;
+            pid_atualiza_referencia(newref);
+            sendFloat(enviaReferencia, newref);
         }
-    
+        else if(curva == 1){
+            curva = 0;
+            sendSignal(desativacurva, 0);
+        }
+        printf("Modo Curva Ativado/Desativado\n");
+    }
+
+    pid_activation(pidRes, PWMpinRes, PWMpinVet);
 }
 
 int main(){

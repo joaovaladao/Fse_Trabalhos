@@ -43,18 +43,18 @@ int checkCrc(char conteudoRecebido[]){
     return 0;
 }
 
-float requestFloat(char cmd[]){
+float requestFloat(char protocolo[]){
     unsigned char tx_buffer[20];
     unsigned char *p_tx_buffer;
 
     p_tx_buffer = &tx_buffer[0];
-    *p_tx_buffer++ = cmd[0];
-    *p_tx_buffer++ = cmd[1];
-    *p_tx_buffer++ = cmd[2];
-    *p_tx_buffer++ = cmd[3];
-    *p_tx_buffer++ = cmd[4];
-    *p_tx_buffer++ = cmd[5];
-    *p_tx_buffer++ = cmd[6];
+    *p_tx_buffer++ = protocolo[0];
+    *p_tx_buffer++ = protocolo[1];
+    *p_tx_buffer++ = protocolo[2];
+    *p_tx_buffer++ = protocolo[3];
+    *p_tx_buffer++ = protocolo[4];
+    *p_tx_buffer++ = protocolo[5];
+    *p_tx_buffer++ = protocolo[6];
 
 
     short crc = calcula_CRC(&tx_buffer[0], (p_tx_buffer - &tx_buffer[0]));
@@ -78,10 +78,13 @@ float requestFloat(char cmd[]){
         short crc = calcula_CRC(rx_buffer, 7);
         if((crc & 0xFF) != rx_buffer[7] && ((crc >> 8) & 0xFF) != rx_buffer[8]){
             printf("Erro de CRC\n");
-            requestFloat(cmd);
+            requestFloat(protocolo);
         }
 
-        if (rx_length <= 0){
+        if (rx_length < 0){
+            return 0;
+        }
+        else if (rx_length == 0){
             return 0;
         }
         else{
@@ -253,4 +256,40 @@ int sendSignal(char cmd[]){
                 return 1;
         }
     }
+}
+
+int sendFloat(char cmd[], float f){
+    printf("Valor enviado pela função SendFloat: %f\n",f);
+    unsigned char tx_buffer[50];
+    unsigned char *p_tx_buffer;
+
+    p_tx_buffer = &tx_buffer[0];
+    *p_tx_buffer++ = cmd[0];
+    *p_tx_buffer++ = cmd[1];
+    *p_tx_buffer++ = cmd[2];
+    *p_tx_buffer++ = cmd[3];
+    *p_tx_buffer++ = cmd[4];
+    *p_tx_buffer++ = cmd[5];
+    *p_tx_buffer++ = cmd[6];
+
+    *p_tx_buffer++ = *((int *)&f) & 0xFF;
+    *p_tx_buffer++ = (*((int *)&f) >> 8) & 0xFF;
+    *p_tx_buffer++ = (*((int *)&f) >> 16) & 0xFF;
+    *p_tx_buffer++ = (*((int *)&f) >> 24) & 0xFF;
+
+    short crc = calcula_CRC(&tx_buffer[0], (p_tx_buffer - &tx_buffer[0]));
+    *p_tx_buffer++ = crc & 0xFF;
+    *p_tx_buffer++ = (crc >> 8) & 0xFF;
+
+    if (uart0_filestream != -1){
+        int count = write(uart0_filestream, &tx_buffer[0], (p_tx_buffer - &tx_buffer[0]));
+        if (count < 0){
+            return 0;
+        }
+        else{
+            return 1;
+        }
+    }
+
+    usleep(700000);
 }
