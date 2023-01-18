@@ -94,6 +94,9 @@ void pid_activation(double pidRes, const int PWMpinRes, const int PWMpinVet){
 
 void loop(const int PWMpinRes, const int PWMpinVet){
 
+    time_t t = time(NULL);   
+    struct tm tm = *localtime(&t);
+
     int usuario = requestInt(comandoUsuario);
     printf("Comando do Usuario: %d\n", usuario);
 
@@ -191,6 +194,12 @@ void loop(const int PWMpinRes, const int PWMpinVet){
     }
 
     pid_activation(pidRes, PWMpinRes, PWMpinVet);
+
+    FILE *fpt;
+    fpt = fopen("log.csv", "a+");
+    fprintf(fpt, "%02d/%02d/%d;%02d:%02d:%02d;%0.2lf;%0.2lf;%0.2lf\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec, TempInterna, TempReferencia, pidRes);
+    // fprintf(fpt, "%0.2lf;%0.2lf;%0.2lf;%0.2lf\n", tempInterna, tempAmbiente, tempReferencia, sinalPID);
+    fclose(fpt);
 }
 
 int main(){
