@@ -1,1 +1,3 @@
 scp -P 13508 -r T2 joaobrito@164.41.98.26:~
+
+scp -P 13508 joaobrito@164.41.98.16:/home/joaobrito/T2/log.csv D:\Users\joaov\Documents\Embarcados\Fse_Trabalhos\T2

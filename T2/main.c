@@ -79,16 +79,16 @@ void pid_activation(double pidRes, const int PWMpinRes, const int PWMpinVet){
 
     if (pidRes < 0){
             softPwmWrite(PWMpinRes, 0);
-            delay(0.7);
+            delay(0.5);
             softPwmWrite(PWMpinVet, pidRes * -1);
-            delay(0.7);
+            delay(0.5);
     }
 
     else if (pidRes > 0){
             softPwmWrite(PWMpinVet, 0);
-            delay(0.7);
+            delay(0.5);
             softPwmWrite(PWMpinRes, pidRes);
-            delay(0.7);
+            delay(0.5);
         }   
 }
 
@@ -168,7 +168,7 @@ void loop(const int PWMpinRes, const int PWMpinVet){
         }
 
         printf("Nova Temperatura Referencia (Curva): %f         ", TempReferencia);
-        printf("Segundos: %d\n", count*2);
+        printf("Segundos: %d\n", count);
         pid_atualiza_referencia(TempReferencia);
         sendFloat(enviaReferencia, TempReferencia);
         count++;
@@ -198,7 +198,6 @@ void loop(const int PWMpinRes, const int PWMpinVet){
     FILE *fpt;
     fpt = fopen("log.csv", "a+");
     fprintf(fpt, "%02d/%02d/%d;%02d:%02d:%02d;%0.2lf;%0.2lf;%0.2lf\n", tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec, TempInterna, TempReferencia, pidRes);
-    // fprintf(fpt, "%0.2lf;%0.2lf;%0.2lf;%0.2lf\n", tempInterna, tempAmbiente, tempReferencia, sinalPID);
     fclose(fpt);
 }
 
